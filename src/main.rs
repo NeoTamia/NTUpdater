@@ -84,7 +84,14 @@ async fn main() {
         println!("Download manager is not populated");
         return;
     }
-    for object in download_manager.objects.as_ref().unwrap() {
-        println!("Object: {} (hash: {}, size: {})", object.name, object.hash, object.size);
+
+    let objects_dir = std::path::Path::new("assets/objects");
+    let object_count = download_manager.objects.as_ref().unwrap().len();
+    println!("Downloading {} objects into {}", object_count, objects_dir.display());
+    if download_manager.download_all(objects_dir).await {
+        println!("All {} objects downloaded and verified", object_count);
+    } else {
+        let failed = download_manager.failed_downloads.as_ref().unwrap();
+        println!("{} of {} objects failed to download", failed.len(), object_count);
     }
 }
